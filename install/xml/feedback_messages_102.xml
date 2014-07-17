@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<modification>
+	<id>Feedback Messages</id>
+	<version>1.1</version>
+	<vqmver>2.4.1</vqmver>
+	<author>MaRZoCHi</author>
+	<file name="engine/inc/main.php">
+		<operation>
+			<ignoreif><![CDATA[window.location='{$PHP_SELF}?mod=feedbacks']]></ignoreif>
+			<search position="iafter"><![CDATA[<button id=\"clearbutton\" name=\"clearbutton\" class=\"btn btn-red\"><i class=\"icon-trash\"></i> {$lang['btn_clearcache']}</button>]]></search>
+			<add><![CDATA[&nbsp;<button onclick=\"window.location='{$PHP_SELF}?mod=feedbacks';\" class=\"btn btn-green\"><i class=\"icon-envelope\"></i> İletişim Mesajları</button>]]></add>
+		</operation>
+	</file>
+	<file name="engine/ajax/feedback.php">
+		<operation>
+			<ignoreif><![CDATA[// İletişim Mesajları v1.0]]></ignoreif>
+			<search position="after"><![CDATA[$row['template'] = str_replace( "{%group%}", $user_group[$member_id['user_group']]['group_name'], $row['template'] );]]></search>
+			<add><![CDATA[
+// İletişim Mesajları v1.0
+	include_once ENGINE_DIR . '/classes/parse.class.php';
+	$parse = new ParseFilter( );
+	$parse->safe_mode = true;
+	$subject = $db->safesql( trim( $parse->process( $subject ) ) );
+	$email = $db->safesql( trim( $parse->process( $email ) ) );
+	$recipient['fullname'] = $db->safesql( trim( $parse->process( $recipient['fullname'] ) ) );
+	$message = $db->safesql( $parse->BB_Parse( $parse->process( $message ), false ) );
+	$_TIME = time () + ($config['date_adjust'] * 60);
+	$db->query("INSERT INTO " . PREFIX . "_feedbacks VALUES ( '', '" . $db->safesql( $name ) . "', '{$recipient['fullname']}', '" . $db->safesql( $message ) . "', '{$_SERVER['REMOTE_ADDR']}', '{$email}', '{$member_id['user_group']}', '{$subject}', '{$_TIME}' )" );
+// İletişim Mesajları v1.0
+]]></add>
+		</operation>
+	</file>
+	<file name="engine/modules/feedback.php">
+		<operation>
+			<ignoreif><![CDATA[// İletişim Mesajları v1.0]]></ignoreif>
+			<search position="after"><![CDATA[$row['template'] = str_replace( "{%group%}", $user_group[$member_id['user_group']]['group_name'], $row['template'] );]]></search>
+			<add><![CDATA[
+// İletişim Mesajları v1.0
+			include_once ENGINE_DIR . '/classes/parse.class.php';
+			$parse = new ParseFilter( );
+			$parse->safe_mode = true;
+			$subject = $db->safesql( trim( $parse->process( $subject ) ) );
+			$email = $db->safesql( trim( $parse->process( $email ) ) );
+			$recipient['fullname'] = $db->safesql( trim( $parse->process( $recipient['fullname'] ) ) );
+			$message = $db->safesql( $parse->BB_Parse( $parse->process( $message ), false ) );
+			$_TIME = time () + ($config['date_adjust'] * 60);
+			$db->query("INSERT INTO " . PREFIX . "_feedbacks VALUES ( '', '" . $db->safesql( $name ) . "', '{$recipient['fullname']}', '" . $db->safesql( $message ) . "', '{$_SERVER['REMOTE_ADDR']}', '{$email}', '{$member_id['user_group']}', '{$subject}', '{$_TIME}' )" );
+// İletişim Mesajları v1.0
+]]></add>
+		</operation>
+	</file>
+</modification>
