@@ -1,11 +1,11 @@
 <?php
 /*
 =====================================================
- MWS Feedback Messages v1.1 - by MaRZoCHi
+ MWS Feedback Messages v1.2 - by MaRZoCHi
 -----------------------------------------------------
  Site: http://dle.net.tr/
 -----------------------------------------------------
- Copyright (c) 2014
+ Copyright (c) 2015
 -----------------------------------------------------
  Lisans: GPL License
 =====================================================
@@ -33,7 +33,7 @@ require_once(ENGINE_DIR . "/data/dbconfig.php");
 require_once(ENGINE_DIR . "/modules/sitelogin.php");
 require_once ENGINE_DIR . "/classes/install.class.php";
 require_once ENGINE_DIR . "/api/api.class.php";
-	
+
 @header( "Content-type: text/html; charset=" . $config['charset'] );
 require_once(ROOT_DIR."/language/".$config['langs']."/adminpanel.lng");
 
@@ -53,21 +53,15 @@ function mainTable_head( $title ) {
 HTML;
 }
 
-function mainTable_foot() {
-	echo <<< HTML
-			</table>
-		</div>
-	</div>
-HTML;
-}
+function mainTable_foot() { echo "</table></div></div>"; }
 
 $module = array(
-	'name'	=> "MWS Feedback Messages v1.1",
+	'name'	=> "MWS Feedback Messages v1.2",
 	'desc'	=> "",
 	'id'	=> "",
 	'icon'	=> "",
 	'ticon'	=> "envelope",
-	'date'	=> "21.04.2014",
+	'date'	=> "10.04.2015",
 	'ifile'	=> "install_module.php",
 	'link'	=> "http://dle.net.tr",
 	'image'	=> "http://img.dle.net.tr/mws/feedback_messages.png",
@@ -84,8 +78,8 @@ if ( $_REQUEST['action'] == "install" ) {
 	$mod = new VQEdit();
 	$mod->backup = True;
 	$mod->bootup( $path = ROOT_DIR, $logging = True );
-	if ( $config['version_id'] == "10.2" ) {
-		$mod->file( ROOT_DIR. "/install/xml/feedback_messages_102.xml" );
+	if ( $config['version_id'] >= "10.2" ) {
+		$mod->file( ROOT_DIR. "/install/xml/feedback_messages.xml" );
 	} else {
 		mainTable_head( $lang['m27'] );
 		echo "<div style=\"padding:10px; background: #990000; color: #fff;\">{$lang['m28']}<br />{$lang['m29']} :<br /><br /><i>http://dle.net.tr</i></div>";
