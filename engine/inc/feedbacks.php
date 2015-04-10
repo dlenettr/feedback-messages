@@ -1,11 +1,11 @@
 <?php
 /*
 =====================================================
- MWS Feedback Messages v1.1 - by MaRZoCHi
+ MWS Feedback Messages v1.2 - by MaRZoCHi
 -----------------------------------------------------
  Site: http://dle.net.tr/
 -----------------------------------------------------
- Copyright (c) 2014
+ Copyright (c) 2015
 -----------------------------------------------------
  Lisans: GPL License
 =====================================================
@@ -20,7 +20,7 @@ if( $action == "mass_delete" ) {
 	if( $_REQUEST['user_hash'] == "" or $_REQUEST['user_hash'] != $dle_login_hash ) {
 		die( "Hacking attempt! User not found" );
 	}
-	
+
 	if( ! $_POST['selected_feedbacks'] ) {
 		msg( "error", "Hata", "Silinecek herhangi bir mesaj seçmediniz.", "{$PHP_SELF}?mod=feedbacks" );
 	}
@@ -31,7 +31,7 @@ if( $action == "mass_delete" ) {
 
 } else {
 	include_once ENGINE_DIR . '/classes/parse.class.php';
-	
+
 	$parse = new ParseFilter( );
 	$parse->safe_mode = true;
 
@@ -42,7 +42,7 @@ if( $action == "mass_delete" ) {
 
 	$gopage = intval( $_GET['gopage'] );
 	if( $gopage > 0 ) $start_from = ($gopage - 1) * $news_per_page;
-	
+
 	$result_count = $db->super_query( "SELECT COUNT(*) as count FROM " . PREFIX . "_feedbacks" );
 
 	if ( $result_count['count'] == 0 ) {
@@ -50,11 +50,11 @@ if( $action == "mass_delete" ) {
 	}
 
 	echoheader( "<i class=\"icon-envelope\"></i>İletişim Mesajları", "Mesajları yönet" );
-	
+
 	$entries = "";
 
 	$db->query( "SELECT * FROM " . PREFIX . "_feedbacks ORDER BY date DESC LIMIT {$start_from},{$news_per_page}" );
-	
+
 	while ( $row = $db->get_array() ) {
 		$i++;
 
@@ -65,13 +65,15 @@ if( $action == "mass_delete" ) {
 		$is_long = ( strlen( $row['text'] ) > 250 ) ? "yes" : "no";
 		$row['text'] = "<textarea data-long=\"{$is_long}\" style=\"width:100%; height:80px;font-family:verdana; font-size:11px; border:1px solid #E0E0E0\">" . $row['text'] . "</textarea>";
 		$date = langdate( "d.m.Y H:i:s", $row['date'] );
+
 $entries .= <<<HTML
 	<li id='table-comm-{$row['id']}' class="arrow-box-left gray">
 		<div class="avatar"><input name="selected_comments[]" value="{$row['id']}" type="checkbox"></div>
 		<div class="info">
 			<span class="name">
-				<strong class="label label-blue">{$row['username_from']}</strong>
-				<i class="icon-arrow-right"></i> <strong class="label label-green">{$row['username_to']}</strong>
+				Gönderen: <i class="icon-user"></i> <strong class="label label-blue">{$row['username_from']}</strong>
+				Kime: <i class="icon-arrow-right"></i> <strong class="label label-green">{$row['username_to']}</strong>
+				Mail: <span class="label label-cyan" style="color: #fff;">{$row['email']}</span>
 				IP: <span class="label label-gray">{$row['ip']}</span>
 				Konu: <span class="label label-cyan" style="color: #fff;">{$row['subject']}</span>
 				Grubu: <span class="label label-red">{$user_group[$row['group']]['group_name']}</span>
@@ -86,25 +88,17 @@ $entries .= <<<HTML
 	</li>
 HTML;
 
-/*		$entries .= "<tr><td class=\"list\" style=\"padding:4px;\">" . $row['username_to'] . "</td>";
-		$entries .= "<td class=\"list\" style=\"padding:4px;\">" . $row['username_from'] . "<br /><span class=\"small\">Grubu: " . $user_group[$row['group']]['group_name'] . "</span></td>";
-		$entries .= "<td class=\"list\">" . $row['subject'] . "<br /><br />" . $row['text'] . "</td>";
-		$entries .= "<td class=\"list\">" . stripslashes( $row['ip'] ) . "<br /><br /><span class=\"small\">" . $row['email'] . "</span></td>";
-		$entries .= "<td class=\"list\">" . langdate( "d.m.Y H:i:s", $row['date'] ) . " </td>";
-		$entries .= "<td class=\"list\"><input name=\"selected_feedbacks[]\" value=\"{$row['id']}\" type='checkbox'></td>";
-		$entries .= "<tr><td background=\"engine/skins/images/mline.gif\" height=1 colspan=6></td></tr>";
-*/
 	}
-	
+
 	$db->free();
 
 	$npp_nav = "<div class=\"news_navigation\" style=\"margin-bottom:5px; margin-top:5px;\">";
-	
+
 	if( $start_from > 0 ) {
 		$previous = $start_from - $news_per_page;
 		$npp_nav .= "<a href=\"?mod=feedbacks&start_from={$previous}\" title=\"{$lang['edit_prev']}\">&lt;&lt;</a> ";
 	}
-	
+
 	if( $result_count['count'] > $news_per_page ) {
 		$enpages_count = @ceil( $result_count['count'] / $news_per_page );
 		$enpages_start_from = 0;
@@ -133,11 +127,11 @@ HTML;
 					$enpages_start_from = ($start - 1) * $news_per_page;
 				}
 			}
-			
+
 			if( $start > 2 ) {
 				$enpages .= "<a href=\"?mod=feedbacks&start_from=0\">1</a> ... ";
 			}
-			
+
 			for($j = $start; $j <= $end; $j ++) {
 				if( $enpages_start_from != $start_from ) {
 					$enpages .= "<a href=\"?mod=feedbacks&start_from={$enpages_start_from}\">$j</a> ";
@@ -151,7 +145,7 @@ HTML;
 			$npp_nav .= $enpages;
 		}
 	}
-	
+
 	if( $result_count['count'] > $i ) {
 		$how_next = $result_count['count'] - $i;
 		if( $how_next > $news_per_page ) {
@@ -161,7 +155,7 @@ HTML;
 	}
 	$npp_nav .= "</div>";
 
-	
+
 	echo <<<HTML
 <script language="javascript" type="text/javascript">
 function check_uncheck_all() {
@@ -177,32 +171,32 @@ function check_uncheck_all() {
     else{ frm.master_box.checked = true; }
 }
 function popupedit( name ) {
-		var rndval = new Date().getTime(); 
+		var rndval = new Date().getTime();
 
 		$('body').append('<div id="modal-overlay" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #666666; opacity: .40;filter:Alpha(Opacity=40); z-index: 999; display:none;"></div>');
 		$('#modal-overlay').css({'filter' : 'alpha(opacity=40)'}).fadeIn('slow');
-	
+
 		$("#dleuserpopup").remove();
 		$("body").append("<div id='dleuserpopup' title='{$lang['user_edhead']}' style='display:none'></div>");
-	
+
 		$('#dleuserpopup').dialog({
 			autoOpen: true,
 			width: 560,
 			height: 500,
 			dialogClass: "modalfixed",
 			buttons: {
-				"{$lang['user_can']}": function() { 
+				"{$lang['user_can']}": function() {
 					$(this).dialog("close");
-					$("#dleuserpopup").remove();							
+					$("#dleuserpopup").remove();
 				},
-				"{$lang['user_save']}": function() { 
-					document.getElementById('edituserframe').contentWindow.document.getElementById('saveuserform').submit();							
+				"{$lang['user_save']}": function() {
+					document.getElementById('edituserframe').contentWindow.document.getElementById('saveuserform').submit();
 				}
 			},
-			open: function(event, ui) { 
+			open: function(event, ui) {
 				$("#dleuserpopup").html("<iframe name='edituserframe' id='edituserframe' width='100%' height='400' src='{$PHP_SELF}?mod=editusers&action=edituser&user=" + name + "&rndval=" + rndval + "' frameborder='0' marginwidth='0' marginheight='0' allowtransparency='true'></iframe>");
 			},
-			beforeClose: function(event, ui) { 
+			beforeClose: function(event, ui) {
 				$("#dleuserpopup").html("");
 			},
 			close: function(event, ui) {
@@ -222,13 +216,13 @@ function popupedit( name ) {
 <form action="" method="post" name="editmessages">
 <div class="box">
 	<div class="box-header">
-		<div class="title">{$lang['comm_einfo']}</div>
+		<div class="title">Gönderilmiş iletişim mesajları</div>
 	</div>
 	<div class="box-content">
 		<div class="row box-section">
 			<ul class="chat-box timeline">
 			{$entries}
-			</ul>  
+			</ul>
 		</div>
 		{$npp_nav}
 		<div class="row box-section">
