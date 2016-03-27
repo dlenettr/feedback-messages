@@ -1,11 +1,11 @@
 <?php
 /*
 =====================================================
- MWS Feedback Messages v1.2 - by MaRZoCHi
+ MWS Feedback Messages v1.3 - by MaRZoCHi
 -----------------------------------------------------
  Site: http://dle.net.tr/
 -----------------------------------------------------
- Copyright (c) 2015
+ Copyright (c) 2016
 -----------------------------------------------------
  Lisans: GPL License
 =====================================================
@@ -56,12 +56,12 @@ HTML;
 function mainTable_foot() { echo "</table></div></div>"; }
 
 $module = array(
-	'name'	=> "MWS Feedback Messages v1.2",
+	'name'	=> "MWS Feedback Messages v1.3",
 	'desc'	=> "",
 	'id'	=> "",
 	'icon'	=> "",
 	'ticon'	=> "envelope",
-	'date'	=> "10.04.2015",
+	'date'	=> "27.03.2016",
 	'ifile'	=> "install_module.php",
 	'link'	=> "http://dle.net.tr",
 	'image'	=> "http://img.dle.net.tr/mws/feedback_messages.png",
